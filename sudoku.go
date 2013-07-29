@@ -46,7 +46,7 @@ func (g *Game) IsFixed(i, j int) bool {
   return g.fixed[i][j]
 }
 
-// Is the name valid?
+// Is the game finished?
 func (g *Game) IsComplete() bool {
   for i:=0; i < 9; i++ {
     if !(g.isRowComplete(i) &&
@@ -58,7 +58,7 @@ func (g *Game) IsComplete() bool {
   return true
 }
 
-// Check if a board is still valid
+// is this a valid setting of the game board?
 func (g *Game) IsValid() bool {
   for i:=0; i < 9; i++ {
     if !(g.isRowValid(i) &&
@@ -98,7 +98,6 @@ func Solve(game *Game) *Game {
 /**************************** Private Functions *******************************/
 
 func solve(game *Game, k int) *Game {
-  //fmt.Println(game.ToString())
   // game done
   if game.IsComplete() {
     return game
@@ -109,13 +108,14 @@ func solve(game *Game, k int) *Game {
     return nil
   }
 
-  // find next index that needs to be changed.
+  // find next index that needs to be changed (game is incomplete, so there
+  // must be at least 1 such index)
   for {
     i, j := index2coordinates(k)
     if game.IsFixed(i, j) { k += 1 } else { break }
   }
 
-  // try setting each value
+  // try setting this coordinate to each possible value
   i, j := index2coordinates(k)
   for v:=1; v<10; v++ {
     solution := solve(game.Set(i, j, v), k+1)
@@ -170,10 +170,6 @@ func (g *Game) columnTaken(j int) [10]int {
     taken[g.Get(i,j)] += 1
   }
   return taken
-}
-
-func (g *Game) GridTaken(i int) [10]int {
-  return g.gridTaken(i)
 }
 
 // return number of times each value appears in 3x3 grid i
